@@ -1,0 +1,12 @@
+{
+  "name": "tixxer-railway",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tixxer Railway - Train booking with MongoDB backend",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "mongodb": "^6.12.0"
+  }
+}

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Quota &mdash; Tixxer Railway</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar__brand">Tixxer Railway</a>
+    <button class="navbar__toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="navbar__links">
+      <li><a href="bookings.html" class="navbar__link">My Bookings</a></li>
+    </ul>
+  </nav>
+
+  <div class="steps">
+    <div class="steps__item"><span class="steps__number">1</span> Results</div>
+    <div class="steps__divider"></div>
+    <div class="steps__item"><span class="steps__number">2</span> Class</div>
+    <div class="steps__divider"></div>
+    <div class="steps__item steps__item--active"><span class="steps__number">3</span> Quota</div>
+    <div class="steps__divider"></div>
+    <div class="steps__item"><span class="steps__number">4</span> Passenger</div>
+    <div class="steps__divider"></div>
+    <div class="steps__item"><span class="steps__number">5</span> Payment</div>
+  </div>
+
+  <div class="page">
+    <div class="section">
+      <h1 class="section__title">Select your quota</h1>
+      <p class="section__subtitle" id="subtitle">Choose a booking quota to continue.</p>
+
+      <div class="class-list" id="quotaList"></div>
+
+      <a href="#" class="class-continue" id="continueBtn">Continue &rarr;</a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    &copy; 2026 Tixxer Railway
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    // ─── Read data from URL ───
+    const params = new URLSearchParams(window.location.search);
+    const trainNumber = params.get('train_number') || '';
+    const trainName = params.get('train_name') || '';
+    const fromSta = params.get('from') || '';
+    const toSta = params.get('to') || '';
+    const departure = params.get('departure') || '';
+    const arrival = params.get('arrival') || '';
+    const duration = params.get('duration') || '';
+    const dateParam = params.get('date') || '';
+    const selectedClass = params.get('class') || '';
+
+    // Show train + class info in subtitle
+    const subtitle = document.getElementById('subtitle');
+    if (trainName) {
+      subtitle.innerHTML = trainName + ' (' + trainNumber + ') &middot; ' + selectedClass + ' &middot; ' + fromSta + ' &rarr; ' + toSta;
+    }
+
+    const quotas = [
+      { name: 'General', code: 'GN', description: 'Standard booking quota for all passengers' },
+      { name: 'Ladies', code: 'LD', description: 'Reserved for female passengers travelling alone or with children' },
+      { name: 'Lower Berth / Sr. Citizen', code: 'SS', description: 'For senior citizens (male 60+, female 58+) with lower berth preference' },
+      { name: 'Person with Disability', code: 'HP', description: 'For passengers with certified disabilities' },
+      { name: 'Duty Pass', code: 'DP', description: 'For railway employees travelling on duty' },
+      { name: 'Tatkal', code: 'TQ', description: 'Last-minute booking available one day before departure' },
+      { name: 'Premium Tatkal', code: 'PT', description: 'Dynamic pricing for urgent last-minute bookings' }
+    ];
+
+    const list = document.getElementById('quotaList');
+    const continueBtn = document.getElementById('continueBtn');
+    let selected = null;
+
+    quotas.forEach(function(quota) {
+      const row = document.createElement('div');
+      row.className = 'class-option';
+      row.innerHTML =
+        '<div class="class-option__radio"></div>' +
+        '<div class="class-option__info">' +
+          '<span class="class-option__name">' + quota.name + '</span>' +
+          '<span class="class-option__code">' + quota.code + '</span>' +
+        '</div>' +
+        '<div class="class-option__detail">' +
+          '<span class="class-option__label">Details</span>' +
+          '<span class="class-option__value">' + quota.description + '</span>' +
+        '</div>';
+
+      row.addEventListener('click', function() {
+        document.querySelectorAll('.class-option').forEach(function(el) {
+          el.classList.remove('class-option--selected');
+        });
+        row.classList.add('class-option--selected');
+        selected = quota.code;
+        continueBtn.classList.add('class-continue--active');
+
+        // Build passenger.html link with all data carried forward
+        const passengerParams = new URLSearchParams();
+        passengerParams.set('train_number', trainNumber);
+        passengerParams.set('train_name', trainName);
+        passengerParams.set('from', fromSta);
+        passengerParams.set('to', toSta);
+        passengerParams.set('departure', departure);
+        passengerParams.set('arrival', arrival);
+        passengerParams.set('duration', duration);
+        passengerParams.set('date', dateParam);
+        passengerParams.set('class', selectedClass);
+        passengerParams.set('quota', selected);
+        continueBtn.href = 'passenger.html?' + passengerParams.toString();
+      });
+
+      list.appendChild(row);
+    });
+  </script>
+</body>
+</html>

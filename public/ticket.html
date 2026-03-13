@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Ticket &mdash; Tixxer Railway</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar__brand">Tixxer Railway</a>
+    <button class="navbar__toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="navbar__links">
+      <li><a href="bookings.html" class="navbar__link">My Bookings</a></li>
+    </ul>
+  </nav>
+
+  <div class="page">
+    <div class="section" style="text-align: center;">
+      <h1 class="section__title">Booking confirmed</h1>
+      <p class="section__subtitle">Your ticket has been booked successfully.</p>
+    </div>
+
+    <div class="ticket" id="ticket">
+
+      <div class="ticket__header">
+        <span class="ticket__brand">Tixxer Railway</span>
+        <span class="ticket__status">Confirmed</span>
+      </div>
+
+      <div class="ticket__body">
+
+        <!-- PNR -->
+        <div class="ticket__pnr-block">
+          <span class="ticket__pnr-label">PNR Number</span>
+          <span class="ticket__pnr-value" id="pnrValue"></span>
+        </div>
+
+        <div class="ticket__divider"></div>
+
+        <!-- Route -->
+        <div class="ticket__route">
+          <div class="ticket__station">
+            <span class="ticket__station-time">16:55</span>
+            <span class="ticket__station-name">New Delhi</span>
+            <span class="ticket__station-code">NDLS</span>
+          </div>
+          <div class="ticket__route-line">
+            <div class="ticket__route-track">
+              <span class="ticket__route-dot"></span>
+              <span class="ticket__route-dash"></span>
+              <span class="ticket__route-dot"></span>
+            </div>
+            <span class="ticket__route-duration">15h 40m</span>
+          </div>
+          <div class="ticket__station">
+            <span class="ticket__station-time">08:35</span>
+            <span class="ticket__station-name">Mumbai Central</span>
+            <span class="ticket__station-code">MMCT</span>
+          </div>
+        </div>
+
+        <div class="ticket__divider"></div>
+
+        <!-- Details grid -->
+        <div class="ticket__details">
+          <div class="ticket__detail">
+            <span class="ticket__detail-label">Train</span>
+            <span class="ticket__detail-value">12951</span>
+          </div>
+          <div class="ticket__detail">
+            <span class="ticket__detail-label">Train name</span>
+            <span class="ticket__detail-value">Mumbai Rajdhani</span>
+          </div>
+          <div class="ticket__detail">
+            <span class="ticket__detail-label">Date</span>
+            <span class="ticket__detail-value">28 Mar 2026</span>
+          </div>
+          <div class="ticket__detail">
+            <span class="ticket__detail-label">Departure</span>
+            <span class="ticket__detail-value">16:55</span>
+          </div>
+          <div class="ticket__detail">
+            <span class="ticket__detail-label">Class</span>
+            <span class="ticket__detail-value">3AC</span>
+          </div>
+          <div class="ticket__detail">
+            <span class="ticket__detail-label">Quota</span>
+            <span class="ticket__detail-value">General</span>
+          </div>
+        </div>
+
+        <div class="ticket__divider"></div>
+
+        <!-- Passengers -->
+        <div class="ticket__passengers">
+          <h3 class="ticket__passengers-heading">Passengers</h3>
+          <div class="ticket__pax-table">
+            <div class="ticket__pax-row ticket__pax-row--header">
+              <span>Name</span>
+              <span>Age</span>
+              <span>Gender</span>
+              <span>Berth</span>
+              <span>Seat</span>
+            </div>
+            <div class="ticket__pax-row">
+              <span class="ticket__pax-name">Aarav Sharma</span>
+              <span>28</span>
+              <span>M</span>
+              <span>Lower</span>
+              <span class="ticket__pax-seat">B2-36</span>
+            </div>
+            <div class="ticket__pax-row">
+              <span class="ticket__pax-name">Priya Sharma</span>
+              <span>25</span>
+              <span>F</span>
+              <span>Lower</span>
+              <span class="ticket__pax-seat">B2-35</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ticket__divider"></div>
+
+        <!-- Total + QR -->
+        <div class="ticket__bottom">
+          <div class="ticket__total">
+            <span class="ticket__total-label">Total paid</span>
+            <span class="ticket__total-value">&#8377;2,450</span>
+          </div>
+          <div class="ticket__qr">
+            <div class="ticket__qr-box">
+              <svg viewBox="0 0 80 80" width="80" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="80" height="80" fill="#F6F6F4"/>
+                <rect x="4" y="4" width="24" height="24" rx="2" stroke="#111" stroke-width="2" fill="none"/>
+                <rect x="8" y="8" width="16" height="16" rx="1" fill="#111"/>
+                <rect x="52" y="4" width="24" height="24" rx="2" stroke="#111" stroke-width="2" fill="none"/>
+                <rect x="56" y="8" width="16" height="16" rx="1" fill="#111"/>
+                <rect x="4" y="52" width="24" height="24" rx="2" stroke="#111" stroke-width="2" fill="none"/>
+                <rect x="8" y="56" width="16" height="16" rx="1" fill="#111"/>
+                <rect x="32" y="4" width="4" height="4" fill="#111"/>
+                <rect x="38" y="4" width="4" height="4" fill="#111"/>
+                <rect x="32" y="12" width="4" height="4" fill="#111"/>
+                <rect x="44" y="12" width="4" height="4" fill="#111"/>
+                <rect x="32" y="20" width="4" height="4" fill="#111"/>
+                <rect x="38" y="20" width="4" height="4" fill="#111"/>
+                <rect x="4" y="32" width="4" height="4" fill="#111"/>
+                <rect x="12" y="32" width="4" height="4" fill="#111"/>
+                <rect x="20" y="38" width="4" height="4" fill="#111"/>
+                <rect x="32" y="32" width="4" height="4" fill="#111"/>
+                <rect x="38" y="38" width="4" height="4" fill="#111"/>
+                <rect x="44" y="32" width="4" height="4" fill="#111"/>
+                <rect x="52" y="38" width="4" height="4" fill="#111"/>
+                <rect x="64" y="32" width="4" height="4" fill="#111"/>
+                <rect x="72" y="38" width="4" height="4" fill="#111"/>
+                <rect x="52" y="52" width="4" height="4" fill="#111"/>
+                <rect x="60" y="52" width="4" height="4" fill="#111"/>
+                <rect x="68" y="56" width="4" height="4" fill="#111"/>
+                <rect x="52" y="64" width="4" height="4" fill="#111"/>
+                <rect x="64" y="64" width="4" height="4" fill="#111"/>
+                <rect x="72" y="72" width="4" height="4" fill="#111"/>
+                <rect x="56" y="72" width="4" height="4" fill="#111"/>
+              </svg>
+            </div>
+            <span class="ticket__qr-label">Scan to verify</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ticket__footer">
+        <span>Booked on 13 Mar 2026</span>
+        <span>Have a safe journey!</span>
+      </div>
+
+    </div>
+
+    <div class="ticket__actions">
+      <button type="button" class="ticket__download" id="downloadBtn">Download ticket</button>
+      <a href="index.html" class="ticket__home">Back to home &rarr;</a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    &copy; 2026 Tixxer Railway
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Generate random 10-digit PNR number
+    function generatePNR() {
+      let pnr = '';
+      for (let i = 0; i < 10; i++) {
+        pnr += Math.floor(Math.random() * 10);
+      }
+      // Ensure first digit is not 0
+      if (pnr[0] === '0') {
+        pnr = (Math.floor(Math.random() * 9) + 1) + pnr.slice(1);
+      }
+      return pnr;
+    }
+
+    const pnr = generatePNR();
+    document.getElementById('pnrValue').textContent = pnr;
+
+    // ─── Save booking to localStorage + MongoDB ───
+    (async function saveBooking() {
+      const ticket = document.getElementById('ticket');
+
+      // Extract data from the displayed ticket
+      const trainDetail = ticket.querySelector('.ticket__details');
+      const detailValues = trainDetail.querySelectorAll('.ticket__detail-value');
+
+      const stations = ticket.querySelectorAll('.ticket__station');
+      const fromName = stations[0] ? stations[0].querySelector('.ticket__station-name').textContent : '';
+      const toName = stations[1] ? stations[1].querySelector('.ticket__station-name').textContent : '';
+      const fromCode = stations[0] ? stations[0].querySelector('.ticket__station-code').textContent : '';
+      const toCode = stations[1] ? stations[1].querySelector('.ticket__station-code').textContent : '';
+      const depTime = stations[0] ? stations[0].querySelector('.ticket__station-time').textContent : '';
+      const arrTime = stations[1] ? stations[1].querySelector('.ticket__station-time').textContent : '';
+
+      const paxRows = ticket.querySelectorAll('.ticket__pax-row:not(.ticket__pax-row--header)');
+      const passengers = [];
+      paxRows.forEach(function(row) {
+        const spans = row.querySelectorAll('span');
+        passengers.push({
+          name: spans[0] ? spans[0].textContent : '',
+          age: spans[1] ? spans[1].textContent : '',
+          gender: spans[2] ? spans[2].textContent : '',
+          berth: spans[3] ? spans[3].textContent : '',
+          seat: spans[4] ? spans[4].textContent : ''
+        });
+      });
+
+      const totalEl = ticket.querySelector('.ticket__total-value');
+      const total = totalEl ? totalEl.textContent : '';
+
+      const booking = {
+        pnr: pnr,
+        trainNumber: detailValues[0] ? detailValues[0].textContent : '',
+        trainName: detailValues[1] ? detailValues[1].textContent : '',
+        date: detailValues[2] ? detailValues[2].textContent : '',
+        departure: depTime,
+        arrival: arrTime,
+        travelClass: detailValues[4] ? detailValues[4].textContent : '',
+        quota: detailValues[5] ? detailValues[5].textContent : '',
+        fromName: fromName,
+        toName: toName,
+        fromCode: fromCode,
+        toCode: toCode,
+        passengers: passengers,
+        total: total,
+        bookedOn: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+      };
+
+      // Save to localStorage (offline fallback)
+      const bookings = JSON.parse(localStorage.getItem('tixxer_bookings') || '[]');
+      bookings.unshift(booking);
+      localStorage.setItem('tixxer_bookings', JSON.stringify(bookings));
+
+      // Save to MongoDB via API
+      try {
+        await fetch('/api/bookings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(booking)
+        });
+      } catch (err) {
+        console.error('Could not save booking to server:', err);
+      }
+    })();
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const btn = document.getElementById('downloadBtn');
+      btn.textContent = 'Downloaded!';
+      btn.style.backgroundColor = '#2a7d2a';
+      setTimeout(() => {
+        btn.textContent = 'Download ticket';
+        btn.style.backgroundColor = '';
+      }, 2000);
+    });
+  </script>
+</body>
+</html>

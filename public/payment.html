@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment &mdash; Tixxer Railway</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar__brand">Tixxer Railway</a>
+    <button class="navbar__toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="navbar__links">
+      <li><a href="bookings.html" class="navbar__link">My Bookings</a></li>
+    </ul>
+  </nav>
+
+  <div class="steps">
+    <div class="steps__item"><span class="steps__number">1</span> Results</div>
+    <div class="steps__divider"></div>
+    <div class="steps__item"><span class="steps__number">2</span> Class</div>
+    <div class="steps__divider"></div>
+    <div class="steps__item"><span class="steps__number">3</span> Quota</div>
+    <div class="steps__divider"></div>
+    <div class="steps__item"><span class="steps__number">4</span> Passenger</div>
+    <div class="steps__divider"></div>
+    <div class="steps__item steps__item--active"><span class="steps__number">5</span> Payment</div>
+  </div>
+
+  <div class="page">
+    <div class="pay-layout">
+
+      <!-- Left: Booking summary -->
+      <div class="section">
+        <h1 class="section__title">Payment</h1>
+        <p class="section__subtitle">Review your booking and complete payment.</p>
+
+        <div class="pay-summary">
+          <div class="pay-summary__section">
+            <h3 class="pay-summary__heading">Journey details</h3>
+            <div class="pay-summary__row">
+              <span class="pay-summary__label">Train</span>
+              <span class="pay-summary__value">12951 Mumbai Rajdhani</span>
+            </div>
+            <div class="pay-summary__row">
+              <span class="pay-summary__label">Route</span>
+              <span class="pay-summary__value">New Delhi &rarr; Mumbai Central</span>
+            </div>
+            <div class="pay-summary__row">
+              <span class="pay-summary__label">Date</span>
+              <span class="pay-summary__value">28 Mar 2026</span>
+            </div>
+            <div class="pay-summary__row">
+              <span class="pay-summary__label">Class</span>
+              <span class="pay-summary__value">3AC</span>
+            </div>
+          </div>
+
+          <div class="pay-summary__divider"></div>
+
+          <div class="pay-summary__section">
+            <h3 class="pay-summary__heading">Passengers</h3>
+            <div class="pay-summary__row">
+              <span class="pay-summary__label">1. Aarav Sharma</span>
+              <span class="pay-summary__value">28 / M / Lower</span>
+            </div>
+            <div class="pay-summary__row">
+              <span class="pay-summary__label">2. Priya Sharma</span>
+              <span class="pay-summary__value">25 / F / Lower</span>
+            </div>
+          </div>
+
+          <div class="pay-summary__divider"></div>
+
+          <div class="pay-summary__section">
+            <h3 class="pay-summary__heading">Fare breakdown</h3>
+            <div class="pay-summary__row">
+              <span class="pay-summary__label">Base fare (2 &times; &#8377;1,150)</span>
+              <span class="pay-summary__value">&#8377;2,300</span>
+            </div>
+            <div class="pay-summary__row">
+              <span class="pay-summary__label">Service fee</span>
+              <span class="pay-summary__value">&#8377;35</span>
+            </div>
+            <div class="pay-summary__row">
+              <span class="pay-summary__label">GST (5%)</span>
+              <span class="pay-summary__value">&#8377;115</span>
+            </div>
+          </div>
+
+          <div class="pay-summary__divider"></div>
+
+          <div class="pay-summary__row pay-summary__row--total">
+            <span class="pay-summary__label">Total</span>
+            <span class="pay-summary__value">&#8377;2,450</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: MetaMask Pay action -->
+      <aside class="pay-action">
+        <div class="pay-action__amount">
+          <span class="pay-action__amount-label">Amount to pay</span>
+          <span class="pay-action__amount-value">0.0001 ETH</span>
+          <span class="pay-action__amount-label">Sepolia Testnet</span>
+        </div>
+
+        <button type="button" class="pay-action__btn pay-action__btn--connect" id="connectBtn">Connect MetaMask</button>
+
+        <button type="button" class="pay-action__btn" id="payBtn" style="display:none;">Pay 0.0001 ETH</button>
+
+        <div class="pay-action__status" id="payStatus"></div>
+
+        <!-- Processing overlay -->
+        <div class="pay-action__processing" id="payProcessing">
+          <span class="pay-action__spinner"></span>
+          <span id="processingText">Processing payment&hellip;</span>
+        </div>
+
+        <p class="pay-action__note">Sepolia testnet only. No real ETH is used.</p>
+      </aside>
+
+    </div>
+  </div>
+
+  <footer class="footer">
+    &copy; 2026 Tixxer Railway
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // ─── MetaMask + Sepolia Testnet Payment ───
+    const RECEIVER = '0x000000000000000000000000000000000000dEaD';
+    const AMOUNT_ETH = '0.0001';
+    const SEPOLIA_CHAIN_ID = '0xaa36a7';
+
+    const connectBtn = document.getElementById('connectBtn');
+    const payBtn = document.getElementById('payBtn');
+    const payStatus = document.getElementById('payStatus');
+    const payProcessing = document.getElementById('payProcessing');
+    const processingText = document.getElementById('processingText');
+
+    function showStatus(html, type) {
+      const cls = type === 'error' ? 'pay-action__error'
+                : type === 'success' ? 'pay-action__success'
+                : 'pay-action__status';
+      payStatus.className = cls;
+      payStatus.innerHTML = html;
+    }
+
+    function truncateAddress(addr) {
+      return addr.slice(0, 6) + '...' + addr.slice(-4);
+    }
+
+    // ─── Connect Wallet ───
+    connectBtn.addEventListener('click', async () => {
+      if (!window.ethereum) {
+        showStatus(
+          'MetaMask not detected. <a href="https://metamask.io/download/" target="_blank" style="color:var(--accent);">Install MetaMask</a> to continue.',
+          'error'
+        );
+        return;
+      }
+
+      try {
+        connectBtn.classList.add('pay-action__btn--disabled');
+        connectBtn.textContent = 'Connecting...';
+
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const account = accounts[0];
+
+        // Check network
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+
+        if (chainId !== SEPOLIA_CHAIN_ID) {
+          showStatus('Switching to Sepolia testnet...', '');
+          try {
+            await window.ethereum.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: SEPOLIA_CHAIN_ID }]
+            });
+          } catch (switchErr) {
+            if (switchErr.code === 4902) {
+              // Sepolia not added, try adding it
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [{
+                  chainId: SEPOLIA_CHAIN_ID,
+                  chainName: 'Sepolia Testnet',
+                  nativeCurrency: { name: 'SepoliaETH', symbol: 'ETH', decimals: 18 },
+                  rpcUrls: ['https://rpc.sepolia.org'],
+                  blockExplorerUrls: ['https://sepolia.etherscan.io']
+                }]
+              });
+            } else {
+              showStatus('Please switch to Sepolia testnet manually in MetaMask.', 'error');
+              connectBtn.classList.remove('pay-action__btn--disabled');
+              connectBtn.textContent = 'Connect MetaMask';
+              return;
+            }
+          }
+        }
+
+        // Connected successfully
+        showStatus(
+          'Connected: <span class="pay-action__wallet">' + truncateAddress(account) + '</span>',
+          ''
+        );
+        connectBtn.style.display = 'none';
+        payBtn.style.display = 'block';
+
+      } catch (err) {
+        if (err.code === 4001) {
+          showStatus('Connection rejected by user.', 'error');
+        } else {
+          showStatus('Connection failed: ' + (err.message || 'Unknown error'), 'error');
+        }
+        connectBtn.classList.remove('pay-action__btn--disabled');
+        connectBtn.textContent = 'Connect MetaMask';
+      }
+    });
+
+    // ─── Pay ───
+    payBtn.addEventListener('click', async () => {
+      try {
+        payBtn.classList.add('pay-action__btn--disabled');
+        payProcessing.style.display = 'flex';
+        processingText.textContent = 'Confirm in MetaMask...';
+
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+
+        const tx = await signer.sendTransaction({
+          to: RECEIVER,
+          value: ethers.parseEther(AMOUNT_ETH)
+        });
+
+        processingText.textContent = 'Waiting for confirmation...';
+
+        await tx.wait();
+
+        payProcessing.style.display = 'none';
+        payBtn.style.display = 'none';
+
+        showStatus(
+          'Payment successful!' +
+          '<a class="pay-action__tx-link" href="https://sepolia.etherscan.io/tx/' + tx.hash + '" target="_blank">' +
+            'View on Etherscan: ' + truncateAddress(tx.hash) +
+          '</a>',
+          'success'
+        );
+
+        setTimeout(() => {
+          window.location.href = 'ticket.html';
+        }, 3000);
+
+      } catch (err) {
+        payProcessing.style.display = 'none';
+        payBtn.classList.remove('pay-action__btn--disabled');
+
+        if (err.code === 'ACTION_REJECTED' || err.code === 4001) {
+          showStatus('Transaction cancelled by user.', 'error');
+        } else if (err.message && err.message.includes('insufficient funds')) {
+          showStatus(
+            'Insufficient Sepolia ETH. Get free test ETH from ' +
+            '<a href="https://sepoliafaucet.com" target="_blank" style="color:var(--accent);">sepoliafaucet.com</a>',
+            'error'
+          );
+        } else {
+          showStatus('Transaction failed: ' + (err.shortMessage || err.message || 'Unknown error'), 'error');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

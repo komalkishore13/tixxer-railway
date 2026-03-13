@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Trains &mdash; Tixxer Railway</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar__brand">Tixxer Railway</a>
+    <button class="navbar__toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="navbar__links">
+      <li><a href="bookings.html" class="navbar__link">My Bookings</a></li>
+    </ul>
+  </nav>
+
+  <div class="page">
+    <div class="section">
+      <h1 class="section__title">Search trains</h1>
+      <p class="section__subtitle">Enter your route and travel date to find available trains.</p>
+
+      <form class="form" action="results.html" method="get">
+        <div class="form__group">
+          <label class="form__label" for="from">From station</label>
+          <div class="autocomplete">
+            <input class="form__input" type="text" id="from" name="from" placeholder="e.g. New Delhi" autocomplete="off">
+            <div class="autocomplete__list" id="fromList"></div>
+          </div>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="to">To station</label>
+          <div class="autocomplete">
+            <input class="form__input" type="text" id="to" name="to" placeholder="e.g. Mumbai Central" autocomplete="off">
+            <div class="autocomplete__list" id="toList"></div>
+          </div>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="date">Travel date</label>
+          <input class="form__input" type="date" id="date" name="date" min="">
+          <script>document.getElementById('date').min = new Date().toISOString().split('T')[0];</script>
+        </div>
+
+        <div class="form__group form__group--btn">
+          <label class="form__label">&nbsp;</label>
+          <button type="submit" class="form__submit">Search Trains &rarr;</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    &copy; 2026 Tixxer Railway
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script src="js/stations.js"></script>
+  <script>
+    // Sort stations alphabetically by name
+    const sortedStations = [...stations].sort((a, b) => a.name.localeCompare(b.name));
+
+    function initAutocomplete(inputId, listId) {
+      const input = document.getElementById(inputId);
+      const list = document.getElementById(listId);
+      let activeIndex = -1;
+
+      function renderList(matches) {
+        list.innerHTML = '';
+        activeIndex = -1;
+
+        if (matches.length === 0) {
+          list.style.display = 'none';
+          return;
+        }
+
+        matches.forEach((station) => {
+          const item = document.createElement('div');
+          item.className = 'autocomplete__item';
+          item.innerHTML = `
+            <span class="autocomplete__name">${station.name}</span>
+            <span class="autocomplete__code">${station.code}</span>
+          `;
+          item.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            input.value = station.name + ' (' + station.code + ')';
+            list.style.display = 'none';
+          });
+          list.appendChild(item);
+        });
+
+        list.style.display = 'block';
+      }
+
+      function showResults(query) {
+        if (!query) {
+          renderList(sortedStations);
+          return;
+        }
+
+        const q = query.toLowerCase();
+        const matches = sortedStations.filter(s =>
+          s.name.toLowerCase().includes(q) ||
+          s.code.toLowerCase().includes(q) ||
+          s.city.toLowerCase().includes(q)
+        );
+
+        renderList(matches);
+      }
+
+      input.addEventListener('input', () => {
+        showResults(input.value.trim());
+      });
+
+      input.addEventListener('focus', () => {
+        showResults(input.value.trim());
+      });
+
+      input.addEventListener('blur', () => {
+        setTimeout(() => { list.style.display = 'none'; }, 150);
+      });
+
+      input.addEventListener('keydown', (e) => {
+        const items = list.querySelectorAll('.autocomplete__item');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          activeIndex = Math.min(activeIndex + 1, items.length - 1);
+          items.forEach((el, i) => el.classList.toggle('autocomplete__item--active', i === activeIndex));
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          activeIndex = Math.max(activeIndex - 1, 0);
+          items.forEach((el, i) => el.classList.toggle('autocomplete__item--active', i === activeIndex));
+        } else if (e.key === 'Enter' && activeIndex >= 0) {
+          e.preventDefault();
+          items[activeIndex].dispatchEvent(new Event('mousedown'));
+        } else if (e.key === 'Escape') {
+          list.style.display = 'none';
+        }
+      });
+    }
+
+    initAutocomplete('from', 'fromList');
+    initAutocomplete('to', 'toList');
+  </script>
+</body>
+</html>

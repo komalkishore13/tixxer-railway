@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results &mdash; Tixxer Railway</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar__brand">Tixxer Railway</a>
+    <button class="navbar__toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="navbar__links">
+      <li><a href="bookings.html" class="navbar__link">My Bookings</a></li>
+    </ul>
+  </nav>
+
+  <div class="steps">
+    <div class="steps__item steps__item--active"><span class="steps__number">1</span> Results</div>
+    <div class="steps__divider"></div>
+    <div class="steps__item"><span class="steps__number">2</span> Class</div>
+    <div class="steps__divider"></div>
+    <div class="steps__item"><span class="steps__number">3</span> Quota</div>
+    <div class="steps__divider"></div>
+    <div class="steps__item"><span class="steps__number">4</span> Passenger</div>
+    <div class="steps__divider"></div>
+    <div class="steps__item"><span class="steps__number">5</span> Payment</div>
+  </div>
+
+  <div class="page">
+    <div class="section">
+      <h1 class="section__title">Available trains</h1>
+      <p class="section__subtitle" id="subtitle">Select a train to continue booking.</p>
+      <div class="train-list" id="trainList">
+        <div class="train-list__loading" id="loading">
+          <div class="train-list__spinner"></div>
+          <p>Searching trains...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    &copy; 2026 Tixxer Railway
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script src="js/stations.js"></script>
+  <script>
+    // ─── CONFIGURATION ───
+    // Paste your RapidAPI key below (get one free at https://rapidapi.com/IRCTCAPI/api/irctc1)
+    const API_KEY = '9b27121fc4msh82b551a75b137c0p19d794jsnbaf3f322b00e';
+    const API_HOST = 'irctc1.p.rapidapi.com';
+
+    // ─── URL PARAMS ───
+    const params = new URLSearchParams(window.location.search);
+    const fromParam = params.get('from') || '';
+    const toParam = params.get('to') || '';
+    const dateParam = params.get('date') || '';
+
+    // Extract station code from "Station Name (CODE)" format
+    function extractCode(value) {
+      const match = value.match(/\(([A-Z]+)\)\s*$/);
+      return match ? match[1] : '';
+    }
+
+    // Look up station by code or name
+    function findStation(value) {
+      const code = extractCode(value);
+      if (code) {
+        return stations.find(s => s.code === code);
+      }
+      const name = value.trim().toLowerCase();
+      return stations.find(s =>
+        s.name.toLowerCase() === name ||
+        s.code.toLowerCase() === name
+      );
+    }
+
+    const fromStation = findStation(fromParam);
+    const toStation = findStation(toParam);
+    const fromCode = fromStation ? fromStation.code : '';
+    const toCode = toStation ? toStation.code : '';
+
+    const subtitle = document.getElementById('subtitle');
+    const list = document.getElementById('trainList');
+    const loading = document.getElementById('loading');
+
+    // Format date for display
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // Update subtitle with route info
+    if (fromStation && toStation) {
+      let routeText = fromStation.name + ' &rarr; ' + toStation.name;
+      if (dateParam) {
+        routeText += ' &middot; ' + formatDate(dateParam);
+      }
+      subtitle.innerHTML = routeText;
+    }
+
+    // ─── RENDER FUNCTIONS ───
+    function showEmpty(message) {
+      loading.style.display = 'none';
+      list.innerHTML =
+        '<div class="train-list__empty">' +
+          '<p class="train-list__empty-title">No trains found</p>' +
+          '<p class="train-list__empty-text">' + (message || 'There are no trains available for this route. Try a different station or date.') + '</p>' +
+          '<a href="search.html" class="train-list__empty-link">Modify search &rarr;</a>' +
+        '</div>';
+    }
+
+    function showError(message) {
+      loading.style.display = 'none';
+      list.innerHTML =
+        '<div class="train-list__empty">' +
+          '<p class="train-list__empty-title">Something went wrong</p>' +
+          '<p class="train-list__empty-text">' + message + '</p>' +
+          '<a href="search.html" class="train-list__empty-link">&larr; Go back</a>' +
+        '</div>';
+    }
+
+    function renderTrains(trainsData) {
+      loading.style.display = 'none';
+
+      if (!trainsData || trainsData.length === 0) {
+        showEmpty();
+        return;
+      }
+
+      // Result count
+      const heading = document.createElement('div');
+      heading.className = 'result-heading';
+      heading.innerHTML =
+        '<span class="result-heading__badge result-heading__badge--direct">Live</span>' +
+        '<span class="result-heading__text">' + trainsData.length + ' train' + (trainsData.length > 1 ? 's' : '') + ' found</span>';
+      list.appendChild(heading);
+
+      trainsData.forEach(function(train) {
+        const row = document.createElement('div');
+        row.className = 'train-row';
+
+        // Build classes display
+        const classTypes = (train.class_type || []).map(function(c) {
+          return c;
+        }).join('  &middot;  ');
+
+        // Build seat.html link with train data
+        const seatParams = new URLSearchParams();
+        seatParams.set('train_number', train.train_number || '');
+        seatParams.set('train_name', train.train_name || '');
+        seatParams.set('from', train.from_sta || fromCode);
+        seatParams.set('to', train.to_sta || toCode);
+        seatParams.set('departure', train.from_std || '');
+        seatParams.set('arrival', train.to_std || '');
+        seatParams.set('duration', train.duration || '');
+        seatParams.set('date', dateParam);
+        if (train.class_type) {
+          seatParams.set('classes', train.class_type.join(','));
+        }
+
+        row.innerHTML =
+          '<div class="train-row__identity">' +
+            '<span class="train-row__number">' + (train.train_number || '') + '</span>' +
+            '<span class="train-row__name">' + (train.train_name || '') + '</span>' +
+          '</div>' +
+          '<div class="train-row__schedule">' +
+            '<div class="train-row__stops">' +
+              '<span class="train-row__time">' + (train.from_std || '--:--') + '</span>' +
+              '<span class="train-row__station-code">' + (train.from_sta || fromCode) + '</span>' +
+            '</div>' +
+            '<div class="train-row__arrow-block">' +
+              '<span class="train-row__arrow">&rarr;</span>' +
+              '<span class="train-row__duration">' + (train.duration || '') + '</span>' +
+            '</div>' +
+            '<div class="train-row__stops">' +
+              '<span class="train-row__time">' + (train.to_std || '--:--') + '</span>' +
+              '<span class="train-row__station-code">' + (train.to_sta || toCode) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="train-row__meta">' +
+            '<span class="train-row__classes">' + classTypes + '</span>' +
+            '<span class="train-row__days">' + (train.run_days || []).join(' ') + '</span>' +
+          '</div>' +
+          '<a href="seat.html?' + seatParams.toString() + '" class="train-row__select">Select &rarr;</a>';
+
+        list.appendChild(row);
+      });
+    }
+
+    // ─── API CALL ───
+    async function searchTrains() {
+      if (!fromCode || !toCode) {
+        showEmpty('Please provide both origin and destination stations.');
+        return;
+      }
+
+      // Check if API key is configured
+      if (API_KEY === 'YOUR_RAPIDAPI_KEY_HERE') {
+        showError(
+          'API key not configured. To use live train data:<br><br>' +
+          '1. Sign up free at <a href="https://rapidapi.com/IRCTCAPI/api/irctc1" target="_blank" style="color: var(--accent);">rapidapi.com/IRCTCAPI/api/irctc1</a><br>' +
+          '2. Subscribe to the free plan (500 requests/month)<br>' +
+          '3. Copy your API key<br>' +
+          '4. Open <strong>results.html</strong> and replace <code>YOUR_RAPIDAPI_KEY_HERE</code> with your key'
+        );
+        return;
+      }
+
+      const journeyDate = dateParam || new Date().toISOString().split('T')[0];
+
+      try {
+        const url = 'https://irctc1.p.rapidapi.com/api/v3/trainBetweenStations'
+          + '?fromStationCode=' + encodeURIComponent(fromCode)
+          + '&toStationCode=' + encodeURIComponent(toCode)
+          + '&dateOfJourney=' + encodeURIComponent(journeyDate);
+
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'x-rapidapi-key': API_KEY,
+            'x-rapidapi-host': API_HOST
+          }
+        });
+
+        if (!response.ok) {
+          if (response.status === 403) {
+            showError('API key is invalid or expired. Check your RapidAPI key in results.html.');
+          } else if (response.status === 429) {
+            showError('API rate limit reached. The free plan allows 500 requests/month. Try again later.');
+          } else {
+            showError('Failed to fetch train data (HTTP ' + response.status + '). Please try again.');
+          }
+          return;
+        }
+
+        const data = await response.json();
+
+        if (data.status && data.data && data.data.length > 0) {
+          renderTrains(data.data);
+        } else {
+          showEmpty();
+        }
+      } catch (err) {
+        console.error('API Error:', err);
+        showError('Could not connect to the train search service. Check your internet connection and try again.');
+      }
+    }
+
+    searchTrains();
+  </script>
+</body>
+</html>
