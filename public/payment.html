@@ -131,6 +131,7 @@
     &copy; 2026 Tixxer Railway
   </footer>
 
+  <script src="tixxer-auth-gate.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
   <script src="js/app.js"></script>
   <script>
@@ -227,6 +228,10 @@
 
     // ─── Pay ───
     payBtn.addEventListener('click', async () => {
+      // Auth gate — block payment if not logged in
+      const tixxerUser = requireTixxerAuth();
+      if (!tixxerUser) return;
+
       try {
         payBtn.classList.add('pay-action__btn--disabled');
         payProcessing.style.display = 'flex';
