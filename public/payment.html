@@ -134,7 +134,7 @@
   <script src="js/app.js"></script>
   <script>
     // ─── MetaMask + Sepolia Testnet Payment ───
-    const RECEIVER = '0x000000000000000000000000000000000000dEaD';
+    const RECEIVER = '0x04d4DA8938e56C954DCf2Fa4d649B143e8F9541A';
     const AMOUNT_ETH = '0.0001';
     const SEPOLIA_CHAIN_ID = '0xaa36a7';
 
@@ -253,6 +253,26 @@
           '</a>',
           'success'
         );
+
+        // Save payment info to MongoDB
+        try {
+          const senderAddr = await signer.getAddress();
+          await fetch('/api/bookings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'payment',
+              txHash: tx.hash,
+              from: senderAddr,
+              to: RECEIVER,
+              amount: AMOUNT_ETH,
+              network: 'sepolia',
+              paidAt: new Date().toISOString()
+            })
+          });
+        } catch (e) {
+          console.error('Could not save payment to server:', e);
+        }
 
         setTimeout(() => {
           window.location.href = 'ticket.html';
